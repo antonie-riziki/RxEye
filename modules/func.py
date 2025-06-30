@@ -71,7 +71,7 @@ def welcome_message(first_name, phone_number):
     print(phone_number)
 
     # Set your message
-    message = f"Hi {first_name}, Karibu VaaSmart! Discover smart fashion picks, local trends & style tips made just for you. Lets wear the Future!";
+    message = f"Hi {first_name}, Welcome to RxEye! Your digital eye for safe medication use.";
 
     # Set your shortCode or senderId
     sender = 20880
