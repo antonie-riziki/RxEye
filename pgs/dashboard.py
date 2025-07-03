@@ -46,7 +46,7 @@ with st.container():
     col6.metric(label="Oxygen Saturation", value="98%", delta="Normal")
 
 # SECTION 4: Physical Traits
-st.subheader("🧬 Physical Traits")
+st.subheader("👤 Physical Traits")
 with st.container():
     col1, col2 = st.columns(2)
     with col1:

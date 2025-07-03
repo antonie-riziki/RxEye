@@ -14,7 +14,7 @@ import sys
 sys.path.insert(1, './modules')
 print(sys.path.insert(1, '../modules/'))
 
-from func import get_medical_info
+from func import get_medical_info, send_drug_reminder
 
 
 from dotenv import load_dotenv
@@ -130,7 +130,13 @@ with tab1:
 
 
             with col3:
-                age = st.number_input('Age', value=1, min_value=1, max_value=100)
+                col33, col34 = st.columns([2, 4])
+
+                with col33:
+                    age = st.number_input('Age', value=None, min_value=1, max_value=100)
+                
+                with col34:
+                    phone_number = st.text_input("Phone Number", placeholder="e.g., +254712345678")
                 dosage = st.text_input("Dosage", placeholder="e.g., 500mg")
 
                 col31, col32 = st.columns(2)
@@ -142,15 +148,14 @@ with tab1:
                     end_time = st.time_input("End Time", value=datetime.now().time())
                   
 
-            
-            
-
             additional_notes = st.text_area("Additional Notes", placeholder="e.g., Take after meals, avoid alcohol...")
 
-            submitted = st.form_submit_button("📥 Save Reminder", type="primary", use_container_width=True)
+            submitted = st.form_submit_button("📥 Set Reminder", type="primary", use_container_width=True)
             if submitted:
-                st.success(f"⏰ Reminder set for {drug_name} on {reminder_date} at {reminder_time.strftime('%I:%M %p')}")
+                send_drug_reminder(phone_number, start_time, drug_name)
+                st.success(f"⏰ Reminder Sent Successfully")
                 st.info(f"💡 Frequency: {frequency} | Type: {drug_type} | Dosage: {dosage}")
+                
                 if additional_notes:
                     st.warning(f"📝 Notes: {additional_notes}")
 

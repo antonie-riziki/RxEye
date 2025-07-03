@@ -63,6 +63,30 @@ def send_otp(phone_number, otp_sms):
     st.toast(f"OTP Sent Successfully")
 
 
+
+def send_drug_reminder(phone_number, time, drug_name):
+
+    recipients = [f"+254{str(phone_number)}"]
+
+    # Set your message
+    message = f"You have to take your {drug_name} today at {time} as prescribed. Get well soon!";
+
+    # Set your shortCode or senderId
+    sender = 20880
+
+    try:
+        response = sms.send(message, recipients, sender)
+
+        print(response)
+
+    except Exception as e:
+        print(f'Houston, we have a problem: {e}')
+
+    st.toast(f"Reminder Sent Successfully")
+
+
+
+
 def welcome_message(first_name, phone_number):
 
     recipients = [f"+254{str(phone_number)}"]
