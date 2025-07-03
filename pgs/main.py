@@ -123,10 +123,10 @@ with tab1:
                 col21, col22 = st.columns(2)
 
                 with col21:
-                    start_date = st.date_input("Start Date", value=datetime.today())
+                    start_date = st.date_input("Start Date", value=None)
 
-                with col22:
-                    start_time = st.time_input("Start Time", value=datetime.now().time())
+                with col22: #datetime.now().time()
+                    start_time = st.time_input("Start Time", value=None)
 
 
             with col3:
@@ -198,7 +198,7 @@ with tab2:
         with col2:
             st.markdown("### 📝 Query Response")
             if response:
-                st.write(response)
+                st.info(response)
             else:
                 st.warning("No response available. Please try again with a different image or query.")
 
