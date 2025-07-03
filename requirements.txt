@@ -26,3 +26,4 @@ google-genai
 st-social-media-links
 plotly
 pandas
+overpy
