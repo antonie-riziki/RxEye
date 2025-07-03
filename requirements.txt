@@ -24,3 +24,5 @@ faiss-cpu
 pypdf
 google-genai
 st-social-media-links
+plotly
+pandas
