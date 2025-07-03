@@ -4,12 +4,13 @@ import streamlit as st
 
 reg_page = st.Page("./pgs/registration.py", title="register", icon=":material/person_add:")
 signin_page = st.Page("./pgs/signin.py", title="sign in", icon=":material/login:")
+dashboard_page = st.Page("./pgs/dashboard.py", title="dashboard", icon=":material/dashboard:")
 home_page = st.Page("./pgs/main.py", title="home page", icon=":material/home:")
 chatbot_page = st.Page("./pgs/chatbot.py", title="chatbot", icon=":material/chat:")
 
 
 
-pg = st.navigation([reg_page, signin_page, home_page, chatbot_page])
+pg = st.navigation([reg_page, signin_page, dashboard_page, home_page, chatbot_page])
 
 st.set_page_config(
     page_title="RxEye",

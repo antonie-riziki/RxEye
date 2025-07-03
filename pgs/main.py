@@ -2,12 +2,19 @@
 from __future__ import annotations
 
 import streamlit as st 
+from datetime import datetime, timedelta
+from PIL import Image
+
+
+
 import sys
 
 
 
-sys.path.insert(1, './models')
-print(sys.path.insert(1, '../models/'))
+sys.path.insert(1, './modules')
+print(sys.path.insert(1, '../modules/'))
+
+from func import get_medical_info
 
 
 from dotenv import load_dotenv
@@ -32,6 +39,164 @@ st.image('https://wellness.mcmaster.ca/app/uploads/2022/05/Green-Minimal-Modern-
 
 
 
+tab1, tab2, tab3, tab4 = st.tabs(["📖 Smart Dose", "Rx Vision Lens", "💊 Dr. Query", "Rx Locator"])
+
+with tab1:
+    st.markdown(
+        """
+        <div class="overview">
+            <h2 style="text-align: center; color: #007B8A;">Welcome to RxEye</h2>
+            <p style="text-align: center;">Your digital eye for safe medication use.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    st.markdown(
+        """
+        <div class="overview-content">
+            <p>RxEye is designed to help you manage your health and medication safely and effectively. 
+            Whether you're looking for information on medications, tracking your health data, or getting personalized recommendations, 
+            RxEye is here to assist you.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    with st.form("med_form"):
+    # Row 1: Patient Info
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            name = st.text_input("Full Name")
+        with col2:
+            age = st.number_input("Age", min_value=0, max_value=120)
+        with col3:
+            gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+
+        # Row 2: Symptoms & History
+        col4, col5 = st.columns([1, 2])
+        with col4:
+            temperature = st.number_input("Body Temperature (°C)", min_value=30.0, max_value=45.0, step=0.1)
+            bp = st.text_input("Blood Pressure (e.g., 120/80)")
+            allergies = st.text_area("Known Allergies", placeholder="Penicillin, Peanuts...")
+        with col5:
+            symptoms = st.text_area("Describe Symptoms", height=150)
+            history = st.text_area("Medical History", height=150)
+
+        # Row 3: Medication Context
+        col6, col7, col8 = st.columns(3)
+        with col6:
+            pregnancy_status = st.selectbox("Pregnancy (if applicable)", ["N/A", "Yes", "No"])
+        with col7:
+            current_medications = st.text_area("Current Medications", height=100)
+        with col8:
+            chronic_conditions = st.text_area("Chronic Conditions", height=100)
+
+        # Submit
+        submitted = st.form_submit_button("🔍 Get Recommendation", type="primary", use_container_width=True)
+
+    if submitted:
+        st.success(f"Thank you {name}! Generating your recommendation...")
+        # Simulated output (replace with actual logic or ML model)
+        st.markdown("### 💊 Recommended Action:")
+        st.info("Based on the inputs provided, consider **Paracetamol 500mg** every 6 hours for fever. Please consult a licensed physician for a full diagnosis.")
 
 
+    set_reminder = st.toggle("🔔 Set Drug Reminder", value=False, help="Enable to set a reminder for your medication schedule.")
 
+    if set_reminder:
+        st.markdown("#### 🕑 Set Reminder Details")
+
+        with st.form("reminder_form"):
+            col1, col2 = st.columns(2)
+            with col1:
+                drug_name = st.text_input("Drug Name", placeholder="e.g., Amoxicillin")
+                drug_type = st.selectbox("Drug Type", ["Tablet", "Capsule", "Injection", "Syrup", "Topical", "Other"])
+            with col2:
+                dosage = st.text_input("Dosage", placeholder="e.g., 500mg")
+                frequency = st.selectbox("Frequency", ["Once Daily", "Twice Daily", "Every 8 hours", "Weekly", "As Needed"])
+
+            reminder_date = st.date_input("Start Date", value=datetime.today())
+            reminder_time = st.time_input("Time to Take", value=datetime.now().time())
+
+            additional_notes = st.text_area("Additional Notes", placeholder="e.g., Take after meals, avoid alcohol...")
+
+            submitted = st.form_submit_button("📥 Save Reminder", type="primary", use_container_width=True)
+            if submitted:
+                st.success(f"⏰ Reminder set for {drug_name} on {reminder_date} at {reminder_time.strftime('%I:%M %p')}")
+                st.info(f"💡 Frequency: {frequency} | Type: {drug_type} | Dosage: {dosage}")
+                if additional_notes:
+                    st.warning(f"📝 Notes: {additional_notes}")
+
+
+with tab2:
+    st.markdown(
+        """
+        <div class="overview">
+            <h2 style="text-align: center; color: #007B8A;">Rx Vision Lens</h2>
+            <p style="text-align: center;">Your digital eye for safe medication use.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    st.markdown(
+        """
+        <div class="overview-content">
+            <p>RxEye is designed to help you manage your health and medication safely and effectively. 
+            Whether you're looking for information on medications, tracking your health data, or getting personalized recommendations, 
+            RxEye is here to assist you.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    uploaded_file = st.file_uploader("Upload an image of your medication", type=["jpg", "jpeg", "png"], label_visibility="collapsed", help="Upload a clear image or document of your medication label or packaging. Supported formats: JPG, JPEG, PNG, PDF.") 
+    query = st.text_input("Enter your query about the medication", placeholder="e.g., What is this medication for? How should I take it?", label_visibility="collapsed", help="Type your question about the medication. Be specific to get the best results.")
+    submit_file = st.button('🔍 Analyze Image/Doc', use_container_width=True, type="primary")
+
+    if submit_file and uploaded_file is not None and query is not None:
+        processed_file = Image.open(uploaded_file)
+        response = get_medical_info(processed_file, query)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("### 📄 Medication Information")
+            st.image(processed_file, caption="Uploaded Medication Image", use_container_width=True)
+
+        with col2:
+            st.markdown("### 📝 Query Response")
+            if response:
+                st.write(response)
+            else:
+                st.warning("No response available. Please try again with a different image or query.")
+
+with tab3:
+    pass
+
+
+with tab4:
+    st.markdown(
+        """
+        <div class="overview">
+            <h2 style="text-align: center; color: #007B8A;">Rx Locator</h2>
+            <p style="text-align: center;">Your digital eye for safe medication use.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    st.markdown(
+        """
+        <div class="overview-content">
+            <p>RxEye is designed to help you manage your health and medication safely and effectively. 
+            Whether you're looking for information on medications, tracking your health data, or getting personalized recommendations, 
+            RxEye is here to assist you.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    location = st.text_input("Enter your location", placeholder="e.g., New York, NY", label_visibility="collapsed", help="Type your current location to find nearby pharmacies or healthcare providers.")
+    search_radius = st.slider("Search Radius (km)", min_value=1, max_value=50, value=10, step=1, label_visibility="collapsed", help="Adjust the radius to search for pharmacies or healthcare providers within a specific distance from your location.")
+    search_button = st.button('🔍 Search', use_container_width=True, type="primary")
