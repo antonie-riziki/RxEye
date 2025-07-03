@@ -27,7 +27,7 @@ st.markdown(
     """
     <div class=title>
         <div style=" justify-content: center;">
-            <h1 style="text-align: center; padding: 5px; color: #007B8A;">RxEye 💊</h1>
+            <h1 style="text-align: center; margin-top: -90px; color: #007B8A;">RxEye 💊</h1>
             <p style="text-align: center;">Your digital eye for safe medication use.</p>
         </div>
     </div>
@@ -192,11 +192,11 @@ with tab2:
 
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown("### 📄 Medication Information")
+            # st.markdown("### 📄 Medication Information")
             st.image(processed_file, caption="Uploaded Medication Image", use_container_width=True)
 
         with col2:
-            st.markdown("### 📝 Query Response")
+            # st.markdown("### 📝 Query Response")
             if response:
                 st.info(response)
             else:

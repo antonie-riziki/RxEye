@@ -70,7 +70,34 @@ st.set_page_config(
 )
 
 
-
+st.markdown('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">', unsafe_allow_html=True)
+     
+st.markdown(
+    """
+        <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark" style="background-color: #007B8A;">
+        <a class="navbar-brand" target="_blank" style="padding-left: 280px; color: white;">Rx Eye 💊</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+            <li class="nav-item"></li>
+            <li class="nav-item"></li>
+            <li class="nav-item"></li>
+            <li class="nav-item"></li>
+            <li class="nav-item active">
+                <a class="nav-link" href="https://www.echominds.africa" href="#">EchoMinds Innovation<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://www.github.com" target="_blank">UTS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Cli</a>
+            </li>
+            </ul>
+        </div>
+        </nav>
+        """, unsafe_allow_html=True)
 
 
 pg.run()
