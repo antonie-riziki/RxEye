@@ -14,6 +14,11 @@ import base64
 from io import BytesIO
 from dotenv import load_dotenv
 from google.genai import types
+
+from geopy.geocoders import Nominatim
+
+import folium
+import overpy
 # from google.generativeai.types import GenerationConfig
 
 
@@ -349,3 +354,45 @@ def google_image_generator(prompt):
         if hasattr(part, 'inline_data') and part.inline_data:
             image = Image.open(BytesIO(part.inline_data.data))
             st.image(image, caption="Your AI-generated outfit", use_column_width=True)
+
+
+
+def plot_health_facilities(location_name: str, area_coverage_m: int):
+        # Step 1: Get coordinates
+        geolocator = Nominatim(user_agent="rxeye_locator")
+        location = geolocator.geocode(location_name)
+        if not location:
+            raise ValueError(f"Could not find location: {location_name}")
+
+        lat, lon = location.latitude, location.longitude
+
+        # Step 2: Overpass API query
+        api = overpy.Overpass()
+        radius = area_coverage_m
+
+        query = f"""
+        (
+        node["amenity"~"clinic|hospital|pharmacy|doctors|dispensary"](around:{radius},{lat},{lon});
+        node["healthcare"](around:{radius},{lat},{lon});
+        node["shop"="medical_supply"](around:{radius},{lat},{lon});
+        );
+        out center;
+        """
+
+        result = api.query(query)
+
+        # Step 3: Initialize map
+        m = folium.Map(location=[lat, lon], zoom_start=14)
+        folium.Marker([lat, lon], tooltip="Search Center", icon=folium.Icon(color='blue')).add_to(m)
+
+        # Step 4: Add facility markers
+        for node in result.nodes:
+            name = node.tags.get("name", "Unnamed Facility")
+            amenity = node.tags.get("amenity", node.tags.get("shop", "healthcare"))
+            folium.Marker(
+                location=[node.lat, node.lon],
+                popup=f"<b>{name}</b><br>{amenity.title()}",
+                icon=folium.Icon(color='red', icon='plus-sign')
+            ).add_to(m)
+
+        return m

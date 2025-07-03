@@ -4,9 +4,11 @@ from __future__ import annotations
 import streamlit as st 
 from datetime import datetime, timedelta
 from PIL import Image
+from geopy.geocoders import Nominatim
+from streamlit_folium import st_folium
 
-
-
+import folium
+import overpy
 import sys
 
 
@@ -14,7 +16,7 @@ import sys
 sys.path.insert(1, './modules')
 print(sys.path.insert(1, '../modules/'))
 
-from func import get_medical_info, send_drug_reminder
+from func import get_medical_info, send_drug_reminder, plot_health_facilities
 
 
 from dotenv import load_dotenv
@@ -231,3 +233,48 @@ with tab4:
     location = st.text_input("Enter your location", placeholder="e.g., New York, NY", label_visibility="collapsed", help="Type your current location to find nearby pharmacies or healthcare providers.")
     search_radius = st.slider("Search Radius (km)", min_value=1, max_value=50, value=10, step=1, label_visibility="collapsed", help="Adjust the radius to search for pharmacies or healthcare providers within a specific distance from your location.")
     search_button = st.button('🔍 Search', use_container_width=True, type="primary")
+
+    # if search_button:
+    #     map_display = plot_health_facilities(location, search_radius)
+    #     st_folium(map_display, width=700) 
+
+
+
+    latitude, longitude = -1.2921, 36.8219
+    radius = 3000  # meters
+
+    # Overpass API query
+    api = overpy.Overpass()
+    query = f"""
+    (
+    node["amenity"~"clinic|hospital|pharmacy|doctors|dispensary"](around:{radius},{latitude},{longitude});
+    node["healthcare"](around:{radius},{latitude},{longitude});
+    node["shop"="medical_supply"](around:{radius},{latitude},{longitude});
+    );
+    out center;
+    """
+
+    # Fetch data
+    try:
+        result = api.query(query)
+    except Exception as e:
+        st.error(f"Error fetching data from Overpass API: {e}")
+        st.stop()
+
+    # Create Folium map
+    m = folium.Map(location=[latitude, longitude], zoom_start=15)
+    folium.Marker([latitude, longitude], tooltip="Center: Nairobi").add_to(m)
+
+    # Add nodes to map
+    for node in result.nodes:
+        name = node.tags.get("name", "Unnamed Facility")
+        type_ = node.tags.get("amenity", node.tags.get("shop", node.tags.get("healthcare", "Facility")))
+        popup = f"<b>{name}</b><br>Type: {type_.title()}"
+        folium.Marker(
+            location=[node.lat, node.lon],
+            popup=popup,
+            icon=folium.Icon(color="red", icon="plus-sign")
+        ).add_to(m)
+
+    # Display in Streamlit
+    st_folium(m, width=1200, height=400)
