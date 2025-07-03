@@ -102,22 +102,48 @@ with tab1:
         st.info("Based on the inputs provided, consider **Paracetamol 500mg** every 6 hours for fever. Please consult a licensed physician for a full diagnosis.")
 
 
-    set_reminder = st.toggle("🔔 Set Drug Reminder", value=False, help="Enable to set a reminder for your medication schedule.")
+    set_reminder = st.toggle("🔔 Reminder", value=False, help="Enable to set a reminder for your medication schedule.")
 
     if set_reminder:
-        st.markdown("#### 🕑 Set Reminder Details")
+        st.markdown("#### 🕑 Drug Reminder Details")
 
         with st.form("reminder_form"):
-            col1, col2 = st.columns(2)
-            with col1:
+            col1, col2, col3 = st.columns(3)
+            
+            with col1: 
+                patients_name = st.text_input('Patients Name', placeholder="e.g john Doe")
                 drug_name = st.text_input("Drug Name", placeholder="e.g., Amoxicillin")
-                drug_type = st.selectbox("Drug Type", ["Tablet", "Capsule", "Injection", "Syrup", "Topical", "Other"])
-            with col2:
-                dosage = st.text_input("Dosage", placeholder="e.g., 500mg")
                 frequency = st.selectbox("Frequency", ["Once Daily", "Twice Daily", "Every 8 hours", "Weekly", "As Needed"])
 
-            reminder_date = st.date_input("Start Date", value=datetime.today())
-            reminder_time = st.time_input("Time to Take", value=datetime.now().time())
+            
+            with col2:
+                sex = st.selectbox('Sex', options=["Male", "Female"])
+                drug_type = st.selectbox("Drug Type", ["Tablet", "Capsule", "Injection", "Syrup", "Topical", "Other"])
+                
+                col21, col22 = st.columns(2)
+
+                with col21:
+                    start_date = st.date_input("Start Date", value=datetime.today())
+
+                with col22:
+                    start_time = st.time_input("Start Time", value=datetime.now().time())
+
+
+            with col3:
+                age = st.number_input('Age', value=1, min_value=1, max_value=100)
+                dosage = st.text_input("Dosage", placeholder="e.g., 500mg")
+
+                col31, col32 = st.columns(2)
+
+                with col31:
+                    end_date = st.date_input("End Date", value=datetime.today())
+
+                with col32:
+                    end_time = st.time_input("End Time", value=datetime.now().time())
+                  
+
+            
+            
 
             additional_notes = st.text_area("Additional Notes", placeholder="e.g., Take after meals, avoid alcohol...")
 
